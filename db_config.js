@@ -1,4 +1,4 @@
-use nominaAcme;
+use (nominaAcme);
 db.createCollection('empleados', {
     validator: {
         $jsonSchema: {
@@ -428,12 +428,11 @@ db.createCollection('ciudades', {
                     bsonType: "string",
                     description: "Nombre de la ciudad."
                 },
-                departamento_id: { // Referencia al departamento al que pertenece
+                departamento_id: { 
                     bsonType: "objectId",
                     description: "ID del departamento al que pertenece la ciudad."
-                }
-                // Opcional: Podrías embeber el nombre del departamento aquí para lecturas rápidas
-                /*
+                },
+               
                 departamento: {
                     bsonType: "object",
                     required: ["id", "nombre"],
@@ -443,7 +442,7 @@ db.createCollection('ciudades', {
                     },
                     description: "Información del departamento al que pertenece la ciudad."
                 }
-                */
+                
             }
         }
     }
@@ -573,7 +572,7 @@ db.createCollection('tipos_novedades', {
                 },
                 impacto: {
                     bsonType: "string",
-                    enum: ["Positivo", "Negativo", "Neutro"], // Cómo afecta la nómina
+                    enum: ["Positivo", "Negativo", "Neutro"], 
                     description: "Tipo de impacto de la novedad en la nómina."
                 },
                 descripcion: {
@@ -613,3 +612,74 @@ db.areas.createIndex({ "nombre": 1 }, { unique: true, name: "idx_area_nombre_uni
 db.cargos.createIndex({ "nombre": 1 }, { unique: true, name: "idx_cargo_nombre_unique" });
 db.conceptos.createIndex({ "nombre": 1 }, { unique: true, name: "idx_concepto_nombre_unique" });
 db.tipos_novedades.createIndex({ "nombre": 1 }, { unique: true, name: "idx_tipoNovedad_nombre_unique" });
+db.createRole(
+    {
+      role: "administradorAcme",
+      privileges: [
+        {
+          resource: { db: "nominaAcme", collection: "" }, // ¡Corregido a 'nominaAcme'!
+          actions: ["anyAction"]
+        }
+      ],
+      roles: []
+    },
+    { w: "majority" }
+  )
+  db.createRole(
+    {
+      role: "gestorNominaAcme",
+      privileges: [
+        // Permisos sobre las colecciones principales de gestión
+        { resource: { db: "nominaAcme", collection: "empleados" }, actions: ["find", "insert", "update", "remove"] },
+        { resource: { db: "nominaAcme", collection: "contratos" }, actions: ["find", "insert", "update", "remove"] },
+        { resource: { db: "nominaAcme", collection: "nominas" }, actions: ["find", "insert", "update", "remove"] },
+        { resource: { db: "nominaAcme", collection: "tipos_novedades" }, actions: ["find", "insert", "update", "remove"] },
+        { resource: { db: "nominaAcme", collection: "conceptos" }, actions: ["find", "insert", "update", "remove"] },
+  
+        // Permisos sobre colecciones de apoyo (si el gestor las modifica, de lo contrario solo 'find')
+        { resource: { db: "nominaAcme", collection: "tipos_identificaciones" }, actions: ["find", "insert", "update", "remove"] },
+        { resource: { db: "nominaAcme", collection: "ciudades" }, actions: ["find", "insert", "update", "remove"] },
+        { resource: { db: "nominaAcme", collection: "departamentos" }, actions: ["find", "insert", "update", "remove"] },
+        { resource: { db: "nominaAcme", collection: "tipos_contratos" }, actions: ["find", "insert", "update", "remove"] },
+        { resource: { db: "nominaAcme", collection: "areas" }, actions: ["find", "insert", "update", "remove"] },
+        { resource: { db: "nominaAcme", collection: "cargos" }, actions: ["find", "insert", "update", "remove"] }
+      ],
+      roles: []
+    },
+    { w: "majority" }
+  )
+  db.createRole(
+    {
+      role: "empleadoAcme",
+      privileges: [
+        { resource: { db: "nominaAcme", collection: "empleados" }, actions: ["find"] }, // ¡Corregido a 'nominaAcme'!
+        { resource: { db: "nominaAcme", collection: "contratos" }, actions: ["find"] }, // ¡Corregido a 'nominaAcme'!
+        { resource: { db: "nominaAcme", collection: "nominas" }, actions: ["find"] }    // ¡Corregido a 'nominaAcme'!
+      ],
+      roles: []
+    },
+    { w: "majority" }
+  )
+  db.createUser(
+    {
+      user: "adminAcme",
+      pwd: passwordPrompt(),
+      roles: [{ role: "administradorAcme", db: "nominaAcme" }]
+    }
+  )
+  
+  db.createUser(
+    {
+      user: "gestorPayroll",
+      pwd: passwordPrompt(),
+      roles: [{ role: "gestorNominaAcme", db: "nominaAcme" }]
+    }
+  )
+  
+  db.createUser(
+    {
+      user: "empleadoJuanPerez", // Usa un identificador significativo aquí, quizás el numeroIdentificacion
+      pwd: passwordPrompt(),
+      roles: [{ role: "empleadoAcme", db: "nominaAcme" }]
+    }
+  )
