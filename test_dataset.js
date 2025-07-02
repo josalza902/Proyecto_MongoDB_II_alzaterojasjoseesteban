@@ -214,3 +214,9 @@ db.nominas.insertOne({
         }
     ]
 });
+db.tipos_novedades.insertMany([
+  { "_id": ObjectId("66831599d3e8a5b71b8b1a45"), "nombre": "Vacaciones" },
+  { "_id": ObjectId("66831599d3e8a5b71b8b1a46"), "nombre": "Registro de Horas Extras" },
+  { "_id": ObjectId("66831599d3e8a5b71b8b1a47"), "nombre": "Ausencia Justificada" },
+  { "_id": ObjectId("66831599d3e8a5b71b8b1a48"), "nombre": "Ausencia Injustificada" } // Este es el que la agregación busca
+]);
