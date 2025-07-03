@@ -308,3 +308,53 @@ db.nominas.insertMany([
     estado: "Creada"
   }
 ])
+db.sacarNomina.insertOne({
+  nomina_id: ObjectId("66b0f0110000000000000001"), // NOM-2025-07
+  contrato_id: ObjectId("66b0f0100000000000000004"), // Contrato Carlos Ruiz
+  conceptos: [
+    {
+      concepto_id: ObjectId("66b0f0060000000000000001"), // Salario Básico
+      tipo: "DEV",
+      nombre: "Salario Básico",
+      valor: 1900000,
+      novedades: [
+        {
+          novedad_id: ObjectId("66b0f1000000000000000001"),
+          tipo_novedad: {
+            id: ObjectId("66b0f0080000000000000002"),
+            nombre: "Vacaciones"
+          },
+          fecha_inicial: new Date("2025-07-10"),
+          fecha_final: new Date("2025-07-20"),
+          observaciones: "Vacaciones programadas",
+          impacto_en_nomina: 0
+        },
+        {
+          novedad_id: ObjectId("66b0f1000000000000000002"),
+          tipo_novedad: {
+            id: ObjectId("66b0f0080000000000000003"),
+            nombre: "Ausencia Injustificada"
+          },
+          fecha_inicial: new Date("2025-07-24"),
+          fecha_final: new Date("2025-07-26"),
+          observaciones: "Falta sin notificación",
+          impacto_en_nomina: -150000
+        }
+      ]
+    },
+    {
+      concepto_id: ObjectId("66b0f0060000000000000002"), // Salud
+      tipo: "DED",
+      nombre: "Salud",
+      valor: 76000,
+      novedades: []
+    },
+    {
+      concepto_id: ObjectId("66b0f0060000000000000003"), // Pensión
+      tipo: "DED",
+      nombre: "Pensión",
+      valor: 76000,
+      novedades: []
+    }
+  ]
+})
