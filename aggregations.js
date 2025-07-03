@@ -1,354 +1,362 @@
 db.contratos.aggregate([
-    {
-      $match: {
-        "activo": "Y" 
-      }
-    },
-    {
-      $lookup: {
-        from: "empleados", 
-        localField: "empleado.id", 
-        foreignField: "_id", 
-        as: "datosEmpleado" 
-      }
-    },
-    {
-      $unwind: "$datosEmpleado" 
-    },
-    {
-      $group: {
-        _id: {
-          areaId: "$cargo.area.id",
-          areaNombre: "$cargo.area.nombre",
-          cargoId: "$cargo.id",
-          cargoNombre: "$cargo.nombre"
-        },
-        empleados: {
-          $push: {
-            tipoDeIdentificacion: "$datosEmpleado.tipoDeIdentificacion",
-            numeroIdentificacion: "$datosEmpleado.numeroIdentificacion",
-            nombres: "$datosEmpleado.nombres",
-            apellidos: "$datosEmpleado.apellidos",
-            telefono: "$datosEmpleado.telefono",
-            email: "$datosEmpleado.email",
-            genero: "$datosEmpleado.genero"
-          }
-        }
-      }
-    },
-    {
-      $project: {
-        _id: 0, 
-        areaCodigo: "$_id.areaId", 
-        areaNombre: "$_id.areaNombre",
-        cargoCodigo: "$_id.cargoId", 
-        cargoNombre: "$_id.cargoNombre",
-        empleados: 1 
-      }
-    },
-    {
-      $sort: {
-        areaNombre: 1,
-        cargoNombre: 1
-      }
-    }
-  ])
-  db.nominas.aggregate([
-    {
-      $match: {
-        "codigo": "NOM-2025-01" 
-      }
-    },
-    {
-      $unwind: "$detalles_contratos" 
-    },
-    {
-      $project: {
-        _id: 0, 
-        tipoDeIdentificacion: "$detalles_contratos.empleado.tipoDeIdentificacion",
-        numeroIdentificacion: "$detalles_contratos.empleado.numeroIdentificacion",
-        nombres: "$detalles_contratos.empleado.nombres",
-        apellidos: "$detalles_contratos.empleado.apellidos",
-        salarioBase: "$detalles_contratos.contrato.salarioBase",
-        totalDeducciones: "$detalles_contratos.total_deducido",
-        totalDevengos: "$detalles_contratos.total_devengado",
-        netoAPagar: "$detalles_contratos.neto_a_pagar"
-      }
-    },
-    {
-      $sort: {
-        apellidos: 1, 
-        nombres: 1
-      }
-    }
-  ])
-  db.nominas.aggregate([
-    {
-      $match: {
-        "codigo": "NOM-2025-01" 
-      }
-    },
-    {
-      $unwind: "$detalles_contratos" 
-    },
-    {
-      $project: {
-        _id: 0, 
-        tipoDeIdentificacion: "$detalles_contratos.empleado.tipoDeIdentificacion",
-        numeroIdentificacion: "$detalles_contratos.empleado.numeroIdentificacion",
-        nombres: "$detalles_contratos.empleado.nombres",
-        apellidos: "$detalles_contratos.empleado.apellidos",
-        salarioBase: "$detalles_contratos.contrato.salarioBase",
-        
-        
-        deducciones: {
-          $filter: {
-            input: "$detalles_contratos.conceptos",
-            as: "concepto",
-            cond: { $eq: ["$$concepto.tipo", "DED"] }
-          }
-        },
-        
-        devengos: {
-          $filter: {
-            input: "$detalles_contratos.conceptos",
-            as: "concepto",
-            cond: { $eq: ["$$concepto.tipo", "DEV"] }
-          }
-        }
-      }
-    },
-    {
-      $sort: {
-        apellidos: 1, 
-        nombres: 1
-      }
-    }
-  ])
-  db.empleados.aggregate([
-    {
-      $match: {
-        "activo": "Y" 
-      }
-    },
-    {
-      $group: {
-        _id: "$ciudad", 
-        totalEmpleados: { $count: {} } 
-      }
-    },
-    {
-      $project: {
-        _id: 0, 
-        ciudad: "$_id", 
-        totalEmpleados: 1 
-      }
-    },
-    {
-      $sort: {
-        totalEmpleados: -1 
-      }
-    }
-  ])
-  db.contratos.aggregate([
-    {
-      $match: {
-        "activo": "Y", 
-        "salarioBase": { $lte: 280000000 } // Salario base menor o igual a 2 SMMLV (2,800,000 en centavos)
-         // Ajusta este valor (280000000) según el SMMLV actual en centavos
-      }
-    },
-    {
-      $lookup: {
-        from: "empleados",
-        localField: "empleado.id",
-        foreignField: "_id",
-        as: "datosEmpleado"
-      }
-    },
-    {
-      $unwind: "$datosEmpleado"
-    },
-    {
-      $group: {
-        _id: {
-          areaCodigo: "$cargo.area.id",
-          areaNombre: "$cargo.area.nombre",
-          cargoCodigo: "$cargo.id",
-          cargoNombre: "$cargo.nombre"
-        },
-        empleadosConAuxilio: {
-          $push: {
-            tipoDeIdentificacion: "$datosEmpleado.tipoDeIdentificacion",
-            numeroIdentificacion: "$datosEmpleado.numeroIdentificacion",
-            nombres: "$datosEmpleado.nombres",
-            apellidos: "$datosEmpleado.apellidos",
-            salarioBase: "$salarioBase"
-          }
-        }
-      }
-    },
-    {
-      $project: {
-        _id: 0,
-        areaCodigo: "$_id.areaCodigo",
-        areaNombre: "$_id.areaNombre",
-        cargoCodigo: "$_id.cargoCodigo",
-        cargoNombre: "$_id.cargoNombre",
-        empleadosConAuxilio: 1
-      }
-    },
-    {
-      $sort: {
-        areaNombre: 1,
-        cargoNombre: 1
-      }
-    }
-  ])
-  db.contratos.aggregate([
-  {
-    $match: {
-      "activo": "Y" // Filtra solo los contratos vigentes
-    }
-  },
+  
+  { $match: { activo: "Y" } },
+
+  
   {
     $lookup: {
-      from: "empleados", // Colección a la que nos unimos
-      localField: "empleado.id", // Campo en 'contratos'
-      foreignField: "_id", // Campo en 'empleados'
-      as: "datosEmpleado" // Alias para los datos del empleado
+      from: "empleados",
+      localField: "empleado.id",
+      foreignField: "_id",
+      as: "empleadoInfo"
     }
   },
-  {
-    $unwind: "$datosEmpleado" // Desestructura el array 'datosEmpleado'
-  },
-  {
-    $group: {
-      _id: "$datosEmpleado.genero", // Agrupa por el campo 'genero' del empleado
-      salarioPromedio: { $avg: "$salarioBase" } // Calcula el promedio del salarioBase para cada grupo
-    }
-  },
+
+ 
+  { $unwind: "$empleadoInfo" },
+
+
   {
     $project: {
-      _id: 0, // Excluye el _id por defecto del grupo
-      genero: "$_id", // Renombra _id a 'genero'
-      salarioPromedio: 1 // Incluye el salario promedio
+      _id: 0,
+      "area_codigo": "$cargo.area.id",
+      "area_nombre": "$cargo.area.nombre",
+      "cargo_codigo": "$cargo.id",
+      "cargo_nombre": "$cargo.nombre",
+      "tipo_identificacion": "$empleadoInfo.tipoDeIdentificacion",
+      "numero_identificacion": "$empleadoInfo.numeroIdentificacion",
+      "nombres": "$empleadoInfo.nombres",
+      "apellidos": "$empleadoInfo.apellidos",
+      "telefono": "$empleadoInfo.telefono",
+      "email": "$empleadoInfo.email",
+      "genero": "$empleadoInfo.genero"
+    }
+  }
+]);
+db.sacarNomina.aggregate([
+  // 1️⃣ Seleccionamos la nómina por código
+  {
+    $match: {
+      nomina_codigo: "NOM-2025-07" // ajusta al campo que estés usando
     }
   },
+
+  // 2️⃣ Descomponemos el array de conceptos
   {
-    $sort: {
-      genero: 1 // Ordena por género (M, F, etc.)
+    $unwind: "$conceptos"
+  },
+
+  // 3️⃣ Agrupamos por contrato y tipo para sumar los valores
+  {
+    $group: {
+      _id: {
+        contrato_id: "$contrato_id",
+        tipo: "$conceptos.tipo"
+      },
+      total: { $sum: "$conceptos.valor" }
+    }
+  },
+
+  // 4️⃣ Reorganizamos los resultados para tener DEV y DED por contrato
+  {
+    $group: {
+      _id: "$_id.contrato_id",
+      devengos: {
+        $sum: {
+          $cond: [{ $eq: ["$_id.tipo", "DEV"] }, "$total", 0]
+        }
+      },
+      deducciones: {
+        $sum: {
+          $cond: [{ $eq: ["$_id.tipo", "DED"] }, "$total", 0]
+        }
+      }
+    }
+  },
+
+  // 5️⃣ Hacemos join con contratos para obtener salario y datos del empleado
+  {
+    $lookup: {
+      from: "contratos",
+      localField: "_id",
+      foreignField: "_id",
+      as: "contrato"
+    }
+  },
+
+  // 6️⃣ Aseguramos que el contrato sea un único documento
+  { $unwind: "$contrato" },
+
+  // 7️⃣ Proyectamos los campos requeridos
+  {
+    $project: {
+      _id: 0,
+      tipoIdentificacion: "$contrato.empleado.tipoDeIdentificacion",
+      numeroIdentificacion: "$contrato.empleado.numeroIdentificacion",
+      nombres: "$contrato.empleado.nombres",
+      apellidos: "$contrato.empleado.apellidos",
+      salarioBase: "$contrato.salarioBase",
+      totalDevengos: "$devengos",
+      totalDeducciones: "$deducciones",
+      netoAPagar: { $subtract: ["$devengos", "$deducciones"] }
+    }
+  }
+]);
+db.sacarNomina.aggregate([
+  // 1️⃣ Filtrar por ID de empleado y nómina
+  {
+    $match: {
+      "contrato.empleado.id": ObjectId("ID_DEL_EMPLEADO"),
+      "nomina_id": ObjectId("ID_DE_LA_NOMINA")
+    }
+  },
+
+  // 2️⃣ Descomponer conceptos uno a uno
+  { $unwind: "$conceptos" },
+
+  // 3️⃣ Agrupar todos los conceptos según tipo
+  {
+    $group: {
+      _id: {
+        contrato_id: "$contrato._id",
+        tipo: "$conceptos.tipo"
+      },
+      conceptos: {
+        $push: {
+          codigo: "$conceptos.concepto_id",
+          nombre: "$conceptos.nombre",
+          valor: "$conceptos.valor"
+        }
+      },
+      total: { $sum: "$conceptos.valor" }
+    }
+  },
+
+  // 4️⃣ Rearmar para que tengas devengos y deducciones juntos
+  {
+    $group: {
+      _id: "$_id.contrato_id",
+      conceptos: {
+        $push: {
+          tipo: "$_id.tipo",
+          total: "$total",
+          items: "$conceptos"
+        }
+      }
+    }
+  },
+
+  // 5️⃣ Join con contratos para recuperar salario y datos del empleado
+  {
+    $lookup: {
+      from: "contratos",
+      localField: "_id",
+      foreignField: "_id",
+      as: "contrato"
+    }
+  },
+  { $unwind: "$contrato" },
+
+  // 6️⃣ Proyecto final con todos los campos
+  {
+    $project: {
+      _id: 0,
+      tipoIdentificacion: "$contrato.empleado.tipoDeIdentificacion",
+      numeroIdentificacion: "$contrato.empleado.numeroIdentificacion",
+      nombres: "$contrato.empleado.nombres",
+      apellidos: "$contrato.empleado.apellidos",
+      salarioBase: "$contrato.salarioBase",
+
+      deducciones: {
+        $arrayElemAt: [
+          {
+            $filter: {
+              input: "$conceptos",
+              as: "item",
+              cond: { $eq: ["$$item.tipo", "DED"] }
+            }
+          },
+          0
+        ]
+      },
+
+      devengos: {
+        $arrayElemAt: [
+          {
+            $filter: {
+              input: "$conceptos",
+              as: "item",
+              cond: { $eq: ["$$item.tipo", "DEV"] }
+            }
+          },
+          0
+        ]
+      }
+    }
+  }
+]);
+db.empleados.aggregate([
+  // 1️⃣ Filtramos sólo empleados activos, si quieres excluir los inactivos
+  { $match: { activo: "Y" } },
+
+  // 2️⃣ Agrupamos por ciudad y contamos empleados
+  {
+    $group: {
+      _id: "$ciudad",            // Agrupar por ciudad
+      cantidadEmpleados: { $sum: 1 } // Contador por cada coincidencia
+    }
+  },
+
+  // 3️⃣ Proyectamos el resultado en formato legible
+  {
+    $project: {
+      _id: 0,
+      ciudad: "$_id",
+      cantidadEmpleados: 1
+    }
+  },
+
+  // 4️⃣ (Opcional) Ordenar por número de empleados descendente
+  {
+    $sort: { cantidadEmpleados: -1 }
+  }
+]);
+db.contratos.aggregate([
+  {
+    $match: {
+      activo: "Y",
+      salarioBase: { $lt: 2600000 } 
+    }
+  },
+
+  // 2️⃣ Join con empleados
+  {
+    $lookup: {
+      from: "empleados",
+      localField: "empleado.id",
+      foreignField: "_id",
+      as: "empleadoInfo"
+    }
+  },
+
+  // 3️⃣ Aseguramos un único documento de empleado
+  { $unwind: "$empleadoInfo" },
+
+  // 4️⃣ Proyecto final con todos los campos requeridos
+  {
+    $project: {
+      _id: 0,
+      area_codigo: "$cargo.area.id",
+      area_nombre: "$cargo.area.nombre",
+      cargo_codigo: "$cargo.id",
+      cargo_nombre: "$cargo.nombre",
+      tipo_identificacion: "$empleadoInfo.tipoDeIdentificacion",
+      numero_identificacion: "$empleadoInfo.numeroIdentificacion",
+      nombres: "$empleadoInfo.nombres",
+      apellidos: "$empleadoInfo.apellidos",
+      salarioBase: 1
+    }
+  }
+]);
+db.contratos.aggregate([
+  // 1️⃣ Filtramos contratos activos para centrarnos en los vigentes
+  { $match: { activo: "Y" } },
+
+  // 2️⃣ Agrupamos por género del empleado
+  {
+    $group: {
+      _id: "$empleado.genero",               // Agrupamos por género
+      promedioSalario: { $avg: "$salarioBase" } // Calculamos el promedio de salario base
+    }
+  },
+
+  // 3️⃣ Proyectamos el resultado para que sea más legible
+  {
+    $project: {
+      _id: 0,
+      genero: "$_id",
+      promedioSalario: 1
+    }
+  }
+]);
+db.sacarNomina.aggregate([
+  // 1️⃣ Filtramos solo novedades de tipo ausencia en el rango de fechas
+  {
+    $match: {
+      "conceptos.novedades.tipo_novedad.nombre": "Incapacidad",
+      "conceptos.novedades.fecha_inicial": { $lte: ISODate("2025-08-31") },
+      "conceptos.novedades.fecha_final": { $gte: ISODate("2025-07-01") }
+    }
+  },
+
+  // 2️⃣ Descomponemos conceptos
+  { $unwind: "$conceptos" },
+
+  // 3️⃣ Descomponemos novedades dentro del concepto
+  { $unwind: "$conceptos.novedades" },
+
+  // 4️⃣ Filtramos nuevamente por tipo de novedad y rango
+  {
+    $match: {
+      "conceptos.novedades.tipo_novedad.nombre": "Incapacidad",
+      "conceptos.novedades.fecha_inicial": { $lte: ISODate("2025-08-31") },
+      "conceptos.novedades.fecha_final": { $gte: ISODate("2025-07-01") }
+    }
+  },
+
+  // 5️⃣ Contamos faltas agrupadas por contrato
+  {
+    $group: {
+      _id: "$contrato_id",
+      numeroFaltas: { $sum: 1 }
+    }
+  },
+
+  // 6️⃣ Join con contratos para obtener datos del empleado, área y cargo
+  {
+    $lookup: {
+      from: "contratos",
+      localField: "_id",
+      foreignField: "_id",
+      as: "contrato"
+    }
+  },
+  { $unwind: "$contrato" },
+
+  // 7️⃣ Proyecto final con todos los campos requeridos
+  {
+    $project: {
+      _id: 0,
+      area_codigo: "$contrato.cargo.area.id",
+      area_nombre: "$contrato.cargo.area.nombre",
+      cargo_codigo: "$contrato.cargo.id",
+      cargo_nombre: "$contrato.cargo.nombre",
+      tipo_identificacion: "$contrato.empleado.tipoDeIdentificacion",
+      numero_identificacion: "$contrato.empleado.numeroIdentificacion",
+      nombres: "$contrato.empleado.nombres",
+      apellidos: "$contrato.empleado.apellidos",
+      numeroFaltas: 1
+    }
+  }
+]);
+db.contratos.aggregate([
+  // 1️⃣ Filtrar sólo contratos activos
+  { $match: { activo: "Y" } },
+
+  // 2️⃣ Agrupar por nombre del tipo de contrato
+  {
+    $group: {
+      _id: "$tipoContrato.nombre", // Agrupamos por el nombre del tipo
+      cantidadEmpleados: { $sum: 1 }
+    }
+  },
+
+  // 3️⃣ Proyectamos el resultado de forma legible
+  {
+    $project: {
+      _id: 0,
+      tipoContrato: "$_id",
+      cantidadEmpleados: 1
     }
   }
 ])
-db.nominas.aggregate([
-    {
-      // 1. Filtrar las nóminas que potencialmente contengan novedades en el rango de fechas
-      $match: {
-        "fecha_inicial": { $lte: ISODate("2025-01-31T23:59:59Z") }, // La nómina debe iniciar antes o en la fecha final del rango
-        "fecha_final": { $gte: ISODate("2025-01-01T00:00:00Z") }   // Y finalizar después o en la fecha inicial del rango
-      }
-    },
-    {
-      // 2. Desestructurar el array de detalles_contratos para trabajar con cada empleado
-      $unwind: "$detalles_contratos"
-    },
-    {
-      // 3. Desestructurar el array de novedades dentro de cada detalle_contrato
-      $unwind: "$detalles_contratos.novedades"
-    },
-    {
-      // 4. Filtrar las novedades que caen dentro del rango de fechas especificado
-      $match: {
-        "detalles_contratos.novedades.fecha_inicial": { $lte: ISODate("2025-01-31T23:59:59Z") },
-        "detalles_contratos.novedades.fecha_final": { $gte: ISODate("2025-01-01T00:00:00Z") }
-      }
-    },
-    {
-      // 5. Unir con la colección 'tipos_novedades' para obtener el nombre de la novedad
-      $lookup: {
-        from: "tipos_novedades",
-        localField: "detalles_contratos.novedades.tipo_novedad.id",
-        foreignField: "_id",
-        as: "tipoNovedadInfo"
-      }
-    },
-    {
-      // 6. Desestructurar el array tipoNovedadInfo y filtrar por el nombre de la novedad de "falta"
-      $unwind: "$tipoNovedadInfo"
-    },
-    {
-      $match: {
-        // Ajusta este nombre si tu tipo de novedad para faltas es diferente
-        "tipoNovedadInfo.nombre": "Ausencia Injustificada" 
-        // O podrías usar un array si hay varios tipos de novedades que representan faltas:
-        // "tipoNovedadInfo.nombre": { $in: ["Ausencia Injustificada", "Falta"] }
-      }
-    },
-    {
-      // 7. Agrupar por empleado, área y cargo para contar las faltas
-      $group: {
-        _id: {
-          empleadoId: "$detalles_contratos.empleado.id",
-          tipoDeIdentificacion: "$detalles_contratos.empleado.tipoDeIdentificacion",
-          numeroIdentificacion: "$detalles_contratos.empleado.numeroIdentificacion",
-          nombres: "$detalles_contratos.empleado.nombres",
-          apellidos: "$detalles_contratos.empleado.apellidos",
-          areaCodigo: "$detalles_contratos.contrato.cargo.area.id",
-          areaNombre: "$detalles_contratos.contrato.cargo.area.nombre",
-          cargoCodigo: "$detalles_contratos.contrato.cargo.id",
-          cargoNombre: "$detalles_contratos.contrato.cargo.nombre"
-        },
-        numeroDeFaltas: { $sum: 1 } // Cuenta cada novedad como una falta
-      }
-    },
-    {
-      // 8. Proyectar los campos finales con nombres claros
-      $project: {
-        _id: 0,
-        tipoDeIdentificacion: "$_id.tipoDeIdentificacion",
-        numeroIdentificacion: "$_id.numeroIdentificacion",
-        nombres: "$_id.nombres",
-        apellidos: "$_id.apellidos",
-        areaCodigo: "$_id.areaCodigo",
-        areaNombre: "$_id.areaNombre",
-        cargoCodigo: "$_id.cargoCodigo",
-        cargoNombre: "$_id.cargoNombre",
-        numeroDeFaltas: 1
-      }
-    },
-    {
-      // 9. Ordenar los resultados para una mejor lectura
-      $sort: {
-        areaNombre: 1,
-        cargoNombre: 1,
-        apellidos: 1,
-        nombres: 1
-      }
-    }
-  ])
-  db.contratos.aggregate([
-    {
-      $match: {
-        "activo": "Y" // Filtra solo los contratos que están vigentes
-      }
-    },
-    {
-      $group: {
-        _id: "$tipoContrato.nombre", // Agrupa por el nombre del tipo de contrato
-        cantidadEmpleados: { $sum: 1 } // Cuenta la cantidad de contratos (y por ende empleados) para cada tipo
-      }
-    },
-    {
-      $project: {
-        _id: 0, // Excluye el _id por defecto
-        tipoDeContrato: "$_id", // Renombra _id a 'tipoDeContrato'
-        cantidadEmpleados: 1 // Incluye la cantidad contada
-      }
-    },
-    {
-      $sort: {
-        cantidadEmpleados: -1 // Ordena los resultados de mayor a menor cantidad de empleados
-      }
-    }
-  ])

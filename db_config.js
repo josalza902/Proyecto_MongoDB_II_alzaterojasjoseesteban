@@ -17,13 +17,13 @@ db.createCollection('empleados', {
             ],
             properties: {
                 tipoDeIdentificacion: {
-                    bsonType: "string", 
+                    bsonType: "string",
                     enum: ["CC", "TI", "PA", "CE"]
                 },
                 numeroIdentificacion: {
-                    bsonType: "string", 
-                    
-                    
+                    bsonType: "string",
+
+
                 },
                 nombres: {
                     bsonType: "string"
@@ -32,21 +32,21 @@ db.createCollection('empleados', {
                     bsonType: "string"
                 },
                 telefono: {
-                    bsonType: "string", 
-                   
-                    
+                    bsonType: "string",
+
+
                 },
                 email: {
                     bsonType: "string",
                     pattern: "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$",
-                    
+
                 },
                 genero: {
                     bsonType: "string",
-                    enum: ["M", "F", "39tiposdegay"] 
+                    enum: ["M", "F", "39tiposdegay"]
                 },
                 ciudad: {
-                    bsonType: "string" 
+                    bsonType: "string"
                 },
                 direccion: {
                     bsonType: "string"
@@ -60,124 +60,91 @@ db.createCollection('empleados', {
     }
 })
 db.createCollection('contratos', {
-    validator: {
-        $jsonSchema: {
-            bsonType: "object",
-            required: [
-             
-                "codigo",
-                "empleado", 
-                "tipoContrato",
-                "duracion",
-                "cargo",
-                "salarioBase",
-                "activo"
-            ],
-            properties: {
-                _id: { 
-                    bsonType: "objectId",
-                   
-                },
-                codigo: {
-                    bsonType: "string", 
-                    
-                },
-                empleado: { 
-                    bsonType: "object",
-                    required: ["id", "nombres", "apellidos"], 
-                    properties: {
-                        id: {
-                            bsonType: "objectId",
-                            
-                        },
-                        nombres: {
-                            bsonType: "string",
-                            
-                        },
-                        apellidos: {
-                            bsonType: "string",
-                            
-                        }
-                        
-                    },
-                   
-                },
-                tipoContrato: { 
-                    bsonType: "object",
-                    required: ["id", "nombre"],
-                    properties: {
-                        id: {
-                            bsonType: "objectId",
-                            
-                        },
-                        nombre: {
-                            bsonType: "string",
-                            
-                        }
-                    },
-                    
-                },
-                duracion: {
-                    bsonType: "int", 
-                   
-                },
-                cargo: { 
-                    bsonType: "object",
-                    required: ["id", "nombre", "area"],
-                    properties: {
-                        id: {
-                            bsonType: "objectId",
-                            
-                        },
-                        nombre: {
-                            bsonType: "string",
-                            
-                        },
-                        area: { 
-                            bsonType: "object",
-                            required: ["id", "nombre"],
-                            properties: {
-                                id: {
-                                    bsonType: "objectId",
-                                    
-                                },
-                                nombre: {
-                                    bsonType: "string",
-                                    
-                                }
-                            },
-                           
-                        }
-                    },
-                    
-                },
-                salarioBase: {
-                    bsonType: "long",
-                    
-                },
-                activo: {
-                    bsonType: "string",
-                    enum: ["Y", "N"],
-                    
-                }
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: [
+        "codigo",
+        "empleado",
+        "tipoContrato",
+        "duracion",
+        "cargo",
+        "salarioBase",
+        "activo"
+      ],
+      properties: {
+        _id: { bsonType: "objectId" },
+        codigo: { bsonType: "string" },
+        empleado: {
+          bsonType: "object",
+          required: ["id", "nombres", "apellidos"],
+          properties: {
+            id: { bsonType: "objectId" },
+            nombres: { bsonType: "string" },
+            apellidos: { bsonType: "string" },
+            telefono: { bsonType: "string" },
+            email: {
+              bsonType: "string",
+              pattern: "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$"
+            },
+            genero: {
+              bsonType: "string",
+              enum: ["M", "F", "39tiposdegay"]
+            },
+            ciudad: { bsonType: "string" },
+            direccion: { bsonType: "string" },
+            activo: {
+              bsonType: "string",
+              enum: ["Y", "N"]
             }
+          }
+        },
+        tipoContrato: {
+          bsonType: "object",
+          required: ["id", "nombre"],
+          properties: {
+            id: { bsonType: "objectId" },
+            nombre: { bsonType: "string" }
+          }
+        },
+        duracion: { bsonType: "int" },
+        cargo: {
+          bsonType: "object",
+          required: ["id", "nombre", "area"],
+          properties: {
+            id: { bsonType: "objectId" },
+            nombre: { bsonType: "string" },
+            area: {
+              bsonType: "object",
+              required: ["id", "nombre"],
+              properties: {
+                id: { bsonType: "objectId" },
+                nombre: { bsonType: "string" }
+              }
+            }
+          }
+        },
+        salarioBase: { bsonType: "long" },
+        activo: {
+          bsonType: "string",
+          enum: ["Y", "N"]
         }
+      }
     }
+  }
 })
 db.createCollection('nominas', {
     validator: {
         $jsonSchema: {
             bsonType: "object",
             required: [
-                
                 "codigo",
                 "fecha_inicial",
                 "fecha_final",
                 "estado",
-                "detalles_contratos" 
             ],
             properties: {
-                
+
                 codigo: {
                     bsonType: "string",
                     description: "Código identificador de la nómina (ej. NOM-2024-06-01)."
@@ -195,203 +162,12 @@ db.createCollection('nominas', {
                     enum: ["Creada", "Calculada", "Aprobada", "Pagada", "Anulada"],
                     description: "Estado actual de la nómina."
                 },
-                detalles_contratos: {
-                    bsonType: "array",
-                    description: "Array de objetos, cada uno conteniendo el detalle de nómina para un contrato/empleado.",
-                    items: { 
-                        bsonType: "object",
-                        required: [
-                            "contrato_id",
-                            "empleado",
-                            "contrato",
-                            "conceptos",
-                            "total_devengado",
-                            "total_deducido",
-                            "neto_a_pagar"
-                        ],
-                        properties: {
-                            contrato_id: { 
-                                bsonType: "objectId",
-                                description: "ID del contrato al que se refiere este detalle de nómina."
-                            },
-                            empleado: { 
-                                bsonType: "object",
-                                required: ["id", "numeroIdentificacion", "nombres", "apellidos", "genero", "email"],
-                                properties: {
-                                    id: {
-                                        bsonType: "objectId",
-                                        description: "ID del empleado."
-                                    },
-                                    tipoDeIdentificacion: { 
-                                        bsonType: "string",
-                                        enum: ["CC", "TI", "PA", "CE"],
-                                        description: "Tipo de identificación del empleado."
-                                    },
-                                    numeroIdentificacion: {
-                                        bsonType: "string",
-                                        description: "Número de identificación del empleado."
-                                    },
-                                    nombres: {
-                                        bsonType: "string",
-                                        description: "Nombres del empleado."
-                                    },
-                                    apellidos: {
-                                        bsonType: "string",
-                                        description: "Apellidos del empleado."
-                                    },
-                                    telefono: {
-                                        bsonType: "string",
-                                        description: "Número de teléfono del empleado."
-                                    },
-                                    email: {
-                                        bsonType: "string",
-                                        pattern: "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$",
-                                        description: "Email del empleado."
-                                    },
-                                    genero: {
-                                        bsonType: "string",
-                                        enum: ["M", "F", "Otro", "No Especificado"], 
-                                        description: "Género del empleado."
-                                    },
-                                    ciudad: { 
-                                        bsonType: "string",
-                                        description: "Ciudad del empleado."
-                                    },
-                                    direccion: {
-                                        bsonType: "string",
-                                        description: "Dirección del empleado."
-                                    }
-                                }
-                            },
-                            contrato: { 
-                                bsonType: "object",
-                                required: ["id", "tipoContrato", "duracion", "cargo", "salarioBase"],
-                                properties: {
-                                    id: {
-                                        bsonType: "objectId",
-                                        description: "ID del contrato (original)."
-                                    },
-                                    codigo: { 
-                                        bsonType: "string",
-                                        description: "Código alfanumérico del contrato."
-                                    },
-                                    tipoContrato: {
-                                        bsonType: "object",
-                                        required: ["id", "nombre"],
-                                        properties: {
-                                            id: { bsonType: "objectId" },
-                                            nombre: { bsonType: "string" }
-                                        },
-                                        description: "Tipo de contrato (ej. 'Término Fijo')."
-                                    },
-                                    duracion: {
-                                        bsonType: "int",
-                                        description: "Duración del contrato en meses."
-                                    },
-                                    cargo: {
-                                        bsonType: "object",
-                                        required: ["id", "nombre", "area"],
-                                        properties: {
-                                            id: { bsonType: "objectId" },
-                                            nombre: { bsonType: "string" },
-                                            area: {
-                                                bsonType: "object",
-                                                required: ["id", "nombre"],
-                                                properties: {
-                                                    id: { bsonType: "objectId" },
-                                                    nombre: { bsonType: "string" }
-                                                }
-                                            }
-                                        },
-                                        description: "Cargo y área del empleado en este contrato."
-                                    },
-                                    salarioBase: {
-                                        bsonType: "long", 
-                                        description: "Salario base del contrato (valor en centavos/unidad mínima)."
-                                    },
-                                    activo: { 
-                                        bsonType: "string",
-                                        enum: ["Y", "N"],
-                                        description: "Estado activo del contrato."
-                                    }
-                                }
-                            },
-                            conceptos: { 
-                                bsonType: "array",
-                                description: "Lista de conceptos (devengados y deducidos) para este contrato.",
-                                items: {
-                                    bsonType: "object",
-                                    required: ["concepto_id", "tipo", "nombre", "valor"],
-                                    properties: {
-                                        concepto_id: {
-                                            bsonType: "objectId",
-                                            description: "ID del concepto de la colección de Conceptos."
-                                        },
-                                        tipo: {
-                                            bsonType: "string",
-                                            enum: ["DEV", "DED"], 
-                                            description: "Tipo de concepto: DEV (Devengado) o DED (Deducido)."
-                                        },
-                                        nombre: {
-                                            bsonType: "string",
-                                            description: "Nombre del concepto (ej. 'Salario Básico', 'Salud')."
-                                        },
-                                        valor: {
-                                            bsonType: "long", 
-                                            description: "Valor del concepto (en centavos/unidad mínima)."
-                                        }
-                                    }
-                                }
-                            },
-                            novedades: { 
-                                bsonType: "array",
-                                description: "Lista de novedades que afectan esta nómina para el contrato.",
-                                items: {
-                                    bsonType: "object",
-                                    required: ["novedad_id", "tipo_novedad", "fecha_inicial", "fecha_final"],
-                                    properties: {
-                                        novedad_id: {
-                                            bsonType: "objectId",
-                                            description: "ID de la novedad (original)."
-                                        },
-                                        tipo_novedad: {
-                                            bsonType: "object",
-                                            required: ["id", "nombre"],
-                                            properties: {
-                                                id: { bsonType: "objectId" },
-                                                nombre: { bsonType: "string" }
-                                            },
-                                            description: "Tipo de novedad (ej. 'Incapacidad')."
-                                        },
-                                        fecha_inicial: { bsonType: "date" },
-                                        fecha_final: { bsonType: "date" },
-                                        observaciones: {
-                                            bsonType: "string",
-                                            description: "Observaciones sobre la novedad."
-                                        },
-                                        impacto_en_nomina: {
-                                            bsonType: "long", 
-                                            description: "Valor del impacto de la novedad en la nómina (en centavos/unidad mínima)."
-                                        }
-                                    }
-                                }
-                            },
-                            total_devengado: {
-                                bsonType: "long", 
-                            },
-                            total_deducido: {
-                                bsonType: "long",
-                            },
-                            neto_a_pagar: {
-                                bsonType: "long",                                
-                            }
-                        }
-                    }
-                }
             }
         }
     }
-})
+}
+
+)
 db.createCollection('tipos_identificaciones', {
     validator: {
         $jsonSchema: {
@@ -431,8 +207,7 @@ db.createCollection('ciudades', {
                 departamento_id: { 
                     bsonType: "objectId",
                     description: "ID del departamento al que pertenece la ciudad."
-                },
-               
+                },             
                 departamento: {
                     bsonType: "object",
                     required: ["id", "nombre"],
@@ -441,12 +216,11 @@ db.createCollection('ciudades', {
                         nombre: { bsonType: "string" }
                     },
                     description: "Información del departamento al que pertenece la ciudad."
-                }
                 
             }
         }
     }
-});
+}});
 db.createCollection('departamentos', {
     validator: {
         $jsonSchema: {
@@ -515,11 +289,11 @@ db.createCollection('cargos', {
                     bsonType: "string",
                     description: "Nombre del cargo (ej. 'Analista', 'Gerente')."
                 },
-                area_id: { 
+                area_id: {
                     bsonType: "objectId",
                     description: "ID del área a la que pertenece el cargo."
                 }
-              
+
             }
         }
     }
@@ -540,17 +314,16 @@ db.createCollection('conceptos', {
                 },
                 tipo: {
                     bsonType: "string",
-                    enum: ["DEV", "DED"], 
+                    enum: ["DEV", "DED"],
                     description: "Tipo de concepto: DEV (Devengado) o DED (Deducido)."
                 },
                 porcentaje: {
-                    bsonType: "double", 
+                    bsonType: "double",
                     description: "Porcentaje asociado al concepto (ej. 0.04 para 4%)."
                 },
                 descripcion: {
                     bsonType: "string",
                     description: "Descripción detallada del concepto.",
-                    
                 }
             }
         }
@@ -572,7 +345,7 @@ db.createCollection('tipos_novedades', {
                 },
                 impacto: {
                     bsonType: "string",
-                    enum: ["Positivo", "Negativo", "Neutro"], 
+                    enum: ["Positivo", "Negativo", "Neutro"], // Cómo afecta la nómina
                     description: "Tipo de impacto de la novedad en la nómina."
                 },
                 descripcion: {
@@ -583,103 +356,160 @@ db.createCollection('tipos_novedades', {
         }
     }
 });
-// --- Índices para la colección 'empleados' ---
-db.empleados.createIndex({ "numeroIdentificacion": 1 }, { unique: true, name: "idx_empleado_numeroIdentificacion_unique" });
-db.empleados.createIndex({ "email": 1 }, { unique: true, name: "idx_empleado_email_unique" });
-db.empleados.createIndex({ "apellidos": 1, "nombres": 1 }, { name: "idx_empleado_apellidos_nombres" });
-db.empleados.createIndex({ "activo": 1 }, { name: "idx_empleado_activo" });
-
-// --- Índices para la colección 'contratos' ---
-db.contratos.createIndex({ "codigo": 1 }, { unique: true, name: "idx_contrato_codigo_unique" });
-db.contratos.createIndex({ "empleado.id": 1 }, { name: "idx_contrato_empleadoId" });
-db.contratos.createIndex({ "activo": 1 }, { name: "idx_contrato_activo" });
-db.contratos.createIndex({ "tipoContrato.id": 1 }, { name: "idx_contrato_tipoContratoId" });
-db.contratos.createIndex({ "cargo.id": 1 }, { name: "idx_contrato_cargoId" });
-
-// --- Índices para la colección 'nominas' ---
-db.nominas.createIndex({ "codigo": 1 }, { unique: true, name: "idx_nomina_codigo_unique" });
-db.nominas.createIndex({ "fecha_final": -1, "fecha_inicial": -1 }, { name: "idx_nomina_fechas" });
-db.nominas.createIndex({ "estado": 1 }, { name: "idx_nomina_estado" });
-db.nominas.createIndex({ "detalles_contratos.empleado.id": 1 }, { name: "idx_nomina_detalles_empleadoId" });
-db.nominas.createIndex({ "detalles_contratos.contrato_id": 1 }, { name: "idx_nomina_detalles_contratoId" });
-
-// --- Índices para las colecciones de Catálogo (Lookup Tables) ---
-db.tipos_identificaciones.createIndex({ "nombre": 1 }, { unique: true, name: "idx_tipoIdentificacion_nombre_unique" });
-db.ciudades.createIndex({ "nombre": 1 }, { unique: true, name: "idx_ciudad_nombre_unique" });
-db.departamentos.createIndex({ "nombre": 1 }, { unique: true, name: "idx_departamento_nombre_unique" });
-db.tipos_contratos.createIndex({ "nombre": 1 }, { unique: true, name: "idx_tipoContrato_nombre_unique" });
-db.areas.createIndex({ "nombre": 1 }, { unique: true, name: "idx_area_nombre_unique" });
-db.cargos.createIndex({ "nombre": 1 }, { unique: true, name: "idx_cargo_nombre_unique" });
-db.conceptos.createIndex({ "nombre": 1 }, { unique: true, name: "idx_concepto_nombre_unique" });
-db.tipos_novedades.createIndex({ "nombre": 1 }, { unique: true, name: "idx_tipoNovedad_nombre_unique" });
-db.createRole(
-    {
-      role: "administradorAcme",
-      privileges: [
-        {
-          resource: { db: "nominaAcme", collection: "" }, // ¡Corregido a 'nominaAcme'!
-          actions: ["anyAction"]
+db.createCollection("sacarNomina", {
+    validator: {
+        $jsonSchema: {
+            bsonType: "object",
+            description: "Lista de conceptos (devengados y deducidos) para este contrato.",
+            items: {
+                bsonType: "object",
+                required: ["concepto_id", "tipo", "nombre"],
+                properties: {
+                    concepto_id: {
+                        bsonType: "objectId",
+                        description: "ID del concepto de la colección de Conceptos."
+                    },
+                    tipo: {
+                        bsonType: "string",
+                        enum: ["DEV", "DED"],
+                        description: "Tipo de concepto: DEV (Devengado) o DED (Deducido)."
+                    },
+                    nombre: {
+                        bsonType: "string",
+                        description: "Nombre del concepto (ej. 'Salario Básico', 'Salud')."
+                    },
+                    novedades: {
+                        bsonType: "array",
+                        description: "Lista de novedades que afectan esta nómina para el contrato.",
+                        items: {
+                            bsonType: "object",
+                            required: ["novedad_id", "tipo_novedad", "fecha_inicial", "fecha_final"],
+                            properties: {
+                                novedad_id: {
+                                    bsonType: "objectId",
+                                    description: "ID de la novedad (original)."
+                                },
+                                tipo_novedad: {
+                                    bsonType: "object",
+                                    required: ["id", "nombre"],
+                                    properties: {
+                                        id: { bsonType: "objectId" },
+                                        nombre: { bsonType: "string" }
+                                    },
+                                    description: "Tipo de novedad (ej. 'Incapacidad')."
+                                },
+                                fecha_inicial: { bsonType: "date" },
+                                fecha_final: { bsonType: "date" },
+                                observaciones: {
+                                    bsonType: "string",
+                                    description: "Observaciones sobre la novedad."
+                                },
+                                impacto_en_nomina: {
+                                    bsonType: "long",
+                                    description: "Valor del impacto de la novedad en la nómina (en centavos/unidad mínima)."
+                                },
+                            }
+                        }
+                    }
+                }
+            }
         }
-      ],
-      roles: []
-    },
-    { w: "majority" }
-  )
-  db.createRole(
-    {
-      role: "gestorNominaAcme",
-      privileges: [
-        // Permisos sobre las colecciones principales de gestión
-        { resource: { db: "nominaAcme", collection: "empleados" }, actions: ["find", "insert", "update", "remove"] },
-        { resource: { db: "nominaAcme", collection: "contratos" }, actions: ["find", "insert", "update", "remove"] },
-        { resource: { db: "nominaAcme", collection: "nominas" }, actions: ["find", "insert", "update", "remove"] },
-        { resource: { db: "nominaAcme", collection: "tipos_novedades" }, actions: ["find", "insert", "update", "remove"] },
-        { resource: { db: "nominaAcme", collection: "conceptos" }, actions: ["find", "insert", "update", "remove"] },
-  
-        // Permisos sobre colecciones de apoyo (si el gestor las modifica, de lo contrario solo 'find')
-        { resource: { db: "nominaAcme", collection: "tipos_identificaciones" }, actions: ["find", "insert", "update", "remove"] },
-        { resource: { db: "nominaAcme", collection: "ciudades" }, actions: ["find", "insert", "update", "remove"] },
-        { resource: { db: "nominaAcme", collection: "departamentos" }, actions: ["find", "insert", "update", "remove"] },
-        { resource: { db: "nominaAcme", collection: "tipos_contratos" }, actions: ["find", "insert", "update", "remove"] },
-        { resource: { db: "nominaAcme", collection: "areas" }, actions: ["find", "insert", "update", "remove"] },
-        { resource: { db: "nominaAcme", collection: "cargos" }, actions: ["find", "insert", "update", "remove"] }
-      ],
-      roles: []
-    },
-    { w: "majority" }
-  )
-  db.createRole(
-    {
-      role: "empleadoAcme",
-      privileges: [
-        { resource: { db: "nominaAcme", collection: "empleados" }, actions: ["find"] }, // ¡Corregido a 'nominaAcme'!
-        { resource: { db: "nominaAcme", collection: "contratos" }, actions: ["find"] }, // ¡Corregido a 'nominaAcme'!
-        { resource: { db: "nominaAcme", collection: "nominas" }, actions: ["find"] }    // ¡Corregido a 'nominaAcme'!
-      ],
-      roles: []
-    },
-    { w: "majority" }
-  )
-  db.createUser(
-    {
-      user: "adminAcme",
-      pwd: passwordPrompt(),
-      roles: [{ role: "administradorAcme", db: "nominaAcme" }]
     }
-  )
-  
-  db.createUser(
+});
+
+db.empleados.createIndex({ ciudad: 1 }) // Para conteo por ciudad
+db.empleados.createIndex({ tipoDeIdentificacion: 1, numeroIdentificacion: 1 }) // Identificación única
+db.contratos.createIndex({ activo: 1 }) // Filtro de contratos vigentes
+db.contratos.createIndex({ "empleado.id": 1 }) // Join con empleados
+db.contratos.createIndex({ "tipoContrato.nombre": 1 }) // Agrupación por tipo de contrato
+db.contratos.createIndex({ salarioBase: 1 }) // Filtrado para auxilio de transporte
+db.sacarNomina.createIndex({ contrato_id: 1 }) // Agregaciones por contrato
+db.sacarNomina.createIndex({ nomina_id: 1 }) // Filtrado por nómina específica
+db.sacarNomina.createIndex({ "conceptos.tipo": 1 }) // DEV / DED
+db.sacarNomina.createIndex({ "conceptos.novedades.fecha_inicial": 1 }) // Rango de fechas
+db.sacarNomina.createIndex({ "conceptos.novedades.tipo_novedad.nombre": 1 }) // Filtro por tipo de novedad
+db.sacarNomina.createIndex({ contrato_id: 1 }) // Agregaciones por contrato
+db.sacarNomina.createIndex({ nomina_id: 1 }) // Filtrado por nómina específica
+db.sacarNomina.createIndex({ "conceptos.tipo": 1 }) // DEV / DED
+db.sacarNomina.createIndex({ "conceptos.novedades.fecha_inicial": 1 }) // Rango de fechas
+db.sacarNomina.createIndex({ "conceptos.novedades.tipo_novedad.nombre": 1 }) // Filtro por tipo de novedad
+db.nominas.createIndex({ codigo: 1 }, { unique: true }) // Identificador de nómina
+db.createRole({
+  role: "Administrador",
+  privileges: [
     {
-      user: "gestorPayroll",
-      pwd: passwordPrompt(),
-      roles: [{ role: "gestorNominaAcme", db: "nominaAcme" }]
+      resource: { db: "", collection: "" },
+      actions: ["readWrite", "dbAdmin", "userAdmin", "clusterMonitor", "dropCollection"]
     }
-  )
-  
-  db.createUser(
+  ],
+  roles: []
+})
+db.createRole({
+  role: "GestorDeNomina",
+  privileges: [
     {
-      user: "empleadoJuanPerez", // Usa un identificador significativo aquí, quizás el numeroIdentificacion
-      pwd: passwordPrompt(),
-      roles: [{ role: "empleadoAcme", db: "nominaAcme" }]
+      resource: { db: "acme_corporate", collection: "empleados" },
+      actions: ["find", "insert", "update"]
+    },
+    {
+      resource: { db: "acme_corporate", collection: "contratos" },
+      actions: ["find", "insert", "update"]
+    },
+    {
+      resource: { db: "acme_corporate", collection: "sacarNomina" },
+      actions: ["find", "insert", "update"]
+    },
+    {
+      resource: { db: "acme_corporate", collection: "nominas" },
+      actions: ["find", "insert", "update"]
+    },
+    {
+      resource: { db: "acme_corporate", collection: "conceptos" },
+      actions: ["find"]
+    },
+    {
+      resource: { db: "acme_corporate", collection: "tipos_novedades" },
+      actions: ["find"]
     }
-  )
+  ],
+  roles: []
+})
+db.createRole({
+  role: "Empleado",
+  privileges: [
+    {
+      resource: { db: "acme_corporate", collection: "empleados" },
+      actions: ["find"]
+    },
+    {
+      resource: { db: "acme_corporate", collection: "contratos" },
+      actions: ["find"]
+    },
+    {
+      resource: { db: "acme_corporate", collection: "sacarNomina" },
+      actions: ["find"]
+    },
+    {
+      resource: { db: "acme_corporate", collection: "nominas" },
+      actions: ["find"]
+    }
+  ],
+  roles: []
+})
+db.createUser({
+  user: "gestor01",
+  pwd: "contraseña_segura",
+  roles: [{ role: "GestorDeNomina", db: "acme_corporate" }]
+})
+
+db.createUser({
+  user: "empleado01",
+  pwd: "su_clave_segura",
+  roles: [{ role: "Empleado", db: "acme_corporate" }]
+})
+
+db.createUser({
+  user: "admin01",
+  pwd: "clave_maestra",
+  roles: [{ role: "Administrador", db: "admin" }]
+})
